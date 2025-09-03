@@ -75,6 +75,10 @@ export default function Analytics() {
   const [temporalPeriod, setTemporalPeriod] = useState('daily');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  
+  // Sorting state for users table
+  const [sortField, setSortField] = useState<keyof UserAnalytics['users'][0]>('prompt_count');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
 
   const fetchAnalytics = async () => {
     setLoading(true);
@@ -141,6 +145,57 @@ export default function Analytics() {
     if (quality >= 3.5) return 'text-yellow-600 bg-yellow-100';
     if (quality >= 3.0) return 'text-orange-600 bg-orange-100';
     return 'text-red-600 bg-red-100';
+  };
+
+  const handleSort = (field: keyof UserAnalytics['users'][0]) => {
+    if (field === sortField) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('desc');
+    }
+  };
+
+  const getSortedUsers = () => {
+    if (!userAnalytics?.users) return [];
+    
+    return [...userAnalytics.users].sort((a, b) => {
+      const aValue = a[sortField];
+      const bValue = b[sortField];
+      
+      let comparison = 0;
+      
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        comparison = aValue.localeCompare(bValue);
+      } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+        comparison = aValue - bValue;
+      } else {
+        // Handle dates and other types
+        comparison = String(aValue).localeCompare(String(bValue));
+      }
+      
+      return sortDirection === 'asc' ? comparison : -comparison;
+    });
+  };
+
+  const SortIcon = ({ field }: { field: keyof UserAnalytics['users'][0] }) => {
+    if (sortField !== field) {
+      return (
+        <svg className="w-4 h-4 ml-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+        </svg>
+      );
+    }
+    
+    return sortDirection === 'asc' ? (
+      <svg className="w-4 h-4 ml-1 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+      </svg>
+    ) : (
+      <svg className="w-4 h-4 ml-1 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
+      </svg>
+    );
   };
 
   if (loading) {
@@ -359,40 +414,112 @@ export default function Analytics() {
       {/* Top Users */}
       {userAnalytics && (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold mb-6 text-gray-900 dark:text-white">
-            Top Users (by Prompt Count)
-          </h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+              Top Users (by Activity)
+            </h2>
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Sorted by {sortField.replace('_', ' ')} ({sortDirection === 'asc' ? '↑' : '↓'})
+              </div>
+              <button
+                onClick={() => {
+                  setSortField('prompt_count');
+                  setSortDirection('desc');
+                }}
+                className="px-3 py-1 text-xs bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+              >
+                Reset Sort
+              </button>
+            </div>
+          </div>
           
           <div className="overflow-x-auto">
             <table className="min-w-full table-auto">
               <thead>
                 <tr className="bg-gray-50 dark:bg-gray-700">
-                  <th className="px-4 py-2 text-left text-gray-900 dark:text-white">User</th>
-                  <th className="px-4 py-2 text-left text-gray-900 dark:text-white">Prompts</th>
-                  <th className="px-4 py-2 text-left text-gray-900 dark:text-white">Avg Quality</th>
-                  <th className="px-4 py-2 text-left text-gray-900 dark:text-white">Total Tokens</th>
-                  <th className="px-4 py-2 text-left text-gray-900 dark:text-white">Avg Length</th>
-                  <th className="px-4 py-2 text-left text-gray-900 dark:text-white">Total Cost</th>
-                  <th className="px-4 py-2 text-left text-gray-900 dark:text-white">Activity Period</th>
+                  <th 
+                    className="px-4 py-2 text-left text-gray-900 dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    onClick={() => handleSort('user_name')}
+                  >
+                    <div className="flex items-center">
+                      User
+                      <SortIcon field="user_name" />
+                    </div>
+                  </th>
+                  <th 
+                    className="px-4 py-2 text-left text-gray-900 dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    onClick={() => handleSort('prompt_count')}
+                  >
+                    <div className="flex items-center">
+                      Prompts
+                      <SortIcon field="prompt_count" />
+                    </div>
+                  </th>
+                  <th 
+                    className="px-4 py-2 text-left text-gray-900 dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    onClick={() => handleSort('avg_quality')}
+                  >
+                    <div className="flex items-center">
+                      Avg Quality
+                      <SortIcon field="avg_quality" />
+                    </div>
+                  </th>
+                  <th 
+                    className="px-4 py-2 text-left text-gray-900 dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    onClick={() => handleSort('total_tokens')}
+                  >
+                    <div className="flex items-center">
+                      Total Tokens
+                      <SortIcon field="total_tokens" />
+                    </div>
+                  </th>
+                  <th 
+                    className="px-4 py-2 text-left text-gray-900 dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    onClick={() => handleSort('avg_prompt_length')}
+                  >
+                    <div className="flex items-center">
+                      Avg Length
+                      <SortIcon field="avg_prompt_length" />
+                    </div>
+                  </th>
+                  <th 
+                    className="px-4 py-2 text-left text-gray-900 dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    onClick={() => handleSort('total_cost')}
+                  >
+                    <div className="flex items-center">
+                      Total Cost
+                      <SortIcon field="total_cost" />
+                    </div>
+                  </th>
+                  <th 
+                    className="px-4 py-2 text-left text-gray-900 dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    onClick={() => handleSort('first_prompt')}
+                  >
+                    <div className="flex items-center">
+                      Activity Period
+                      <SortIcon field="first_prompt" />
+                    </div>
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {userAnalytics.users && userAnalytics.users.length > 0 ? (
-                  userAnalytics.users.map((user, index) => (
-                    <tr key={index} className="border-b dark:border-gray-600">
+                {userAnalytics && getSortedUsers().length > 0 ? (
+                  getSortedUsers().map((user, index) => (
+                    <tr key={user.user_id} className="border-b dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                       <td className="px-4 py-2">
                         <div className="text-gray-900 dark:text-white font-medium">{user.user_name}</div>
                         <div className="text-sm text-gray-500">{user.user_id}</div>
                       </td>
-                      <td className="px-4 py-2 text-gray-900 dark:text-white">{user.prompt_count}</td>
+                      <td className="px-4 py-2 text-gray-900 dark:text-white font-mono">{user.prompt_count}</td>
                       <td className="px-4 py-2">
                         <span className={`px-2 py-1 rounded text-sm ${getQualityColor(user.avg_quality)}`}>
                           {user.avg_quality}
                         </span>
                       </td>
-                      <td className="px-4 py-2 text-gray-900 dark:text-white">{user.total_tokens.toLocaleString()}</td>
-                      <td className="px-4 py-2 text-gray-900 dark:text-white">{user.avg_prompt_length}</td>
-                      <td className="px-4 py-2 text-gray-900 dark:text-white">${user.total_cost}</td>
+                      <td className="px-4 py-2 text-gray-900 dark:text-white font-mono">{user.total_tokens.toLocaleString()}</td>
+                      <td className="px-4 py-2 text-gray-900 dark:text-white font-mono">{user.avg_prompt_length}</td>
+                      <td className="px-4 py-2 text-gray-900 dark:text-white font-mono">${user.total_cost}</td>
                       <td className="px-4 py-2 text-sm text-gray-600 dark:text-gray-300">
                         {formatDate(user.first_prompt)} - {formatDate(user.last_prompt)}
                       </td>
