@@ -79,6 +79,18 @@ export default function Analytics() {
   // Sorting state for users table
   const [sortField, setSortField] = useState<keyof UserAnalytics['users'][0]>('prompt_count');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  
+  // Sort state for temporal data table
+  const [temporalSortField, setTemporalSortField] = useState<'period' | 'prompt_count' | 'total_tokens' | 'avg_quality' | 'unique_users'>('period');
+  const [temporalSortDirection, setTemporalSortDirection] = useState<'asc' | 'desc'>('asc');
+  
+  // Sort state for model analytics table
+  const [modelSortField, setModelSortField] = useState<'model' | 'prompt_count' | 'avg_quality' | 'avg_tokens' | 'total_cost' | 'avg_response_time' | 'usage_percentage'>('prompt_count');
+  const [modelSortDirection, setModelSortDirection] = useState<'asc' | 'desc'>('desc');
+  
+  // Sort state for category analytics table
+  const [categorySortField, setCategorySortField] = useState<'category' | 'prompt_count' | 'avg_quality' | 'usage_percentage'>('prompt_count');
+  const [categorySortDirection, setCategorySortDirection] = useState<'asc' | 'desc'>('desc');
 
   const fetchAnalytics = async () => {
     setLoading(true);
@@ -178,6 +190,99 @@ export default function Analytics() {
     });
   };
 
+  // Temporal data sorting functions
+  const handleTemporalSort = (field: 'period' | 'prompt_count' | 'total_tokens' | 'avg_quality' | 'unique_users') => {
+    if (field === temporalSortField) {
+      setTemporalSortDirection(temporalSortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setTemporalSortField(field);
+      setTemporalSortDirection('desc');
+    }
+  };
+
+  const getSortedTemporalData = () => {
+    if (!temporalData?.data) return [];
+    
+    return [...temporalData.data].sort((a, b) => {
+      const aValue = a[temporalSortField as keyof typeof a];
+      const bValue = b[temporalSortField as keyof typeof b];
+      
+      let comparison = 0;
+      
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        comparison = aValue.localeCompare(bValue);
+      } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+        comparison = aValue - bValue;
+      } else {
+        comparison = String(aValue).localeCompare(String(bValue));
+      }
+      
+      return temporalSortDirection === 'asc' ? comparison : -comparison;
+    });
+  };
+
+  // Model analytics sorting functions
+  const handleModelSort = (field: 'model' | 'prompt_count' | 'avg_quality' | 'avg_tokens' | 'total_cost' | 'avg_response_time' | 'usage_percentage') => {
+    if (field === modelSortField) {
+      setModelSortDirection(modelSortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setModelSortField(field);
+      setModelSortDirection('desc');
+    }
+  };
+
+  const getSortedModels = () => {
+    if (!modelAnalytics?.models) return [];
+    
+    return [...modelAnalytics.models].sort((a, b) => {
+      const aValue = a[modelSortField as keyof typeof a];
+      const bValue = b[modelSortField as keyof typeof b];
+      
+      let comparison = 0;
+      
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        comparison = aValue.localeCompare(bValue);
+      } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+        comparison = aValue - bValue;
+      } else {
+        comparison = String(aValue).localeCompare(String(bValue));
+      }
+      
+      return modelSortDirection === 'asc' ? comparison : -comparison;
+    });
+  };
+
+  // Category analytics sorting functions
+  const handleCategorySort = (field: 'category' | 'prompt_count' | 'avg_quality' | 'usage_percentage') => {
+    if (field === categorySortField) {
+      setCategorySortDirection(categorySortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setCategorySortField(field);
+      setCategorySortDirection('desc');
+    }
+  };
+
+  const getSortedCategories = () => {
+    if (!categoryAnalytics?.categories) return [];
+    
+    return [...categoryAnalytics.categories].sort((a, b) => {
+      const aValue = a[categorySortField as keyof typeof a];
+      const bValue = b[categorySortField as keyof typeof b];
+      
+      let comparison = 0;
+      
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        comparison = aValue.localeCompare(bValue);
+      } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+        comparison = aValue - bValue;
+      } else {
+        comparison = String(aValue).localeCompare(String(bValue));
+      }
+      
+      return categorySortDirection === 'asc' ? comparison : -comparison;
+    });
+  };
+
   const SortIcon = ({ field }: { field: keyof UserAnalytics['users'][0] }) => {
     if (sortField !== field) {
       return (
@@ -194,6 +299,69 @@ export default function Analytics() {
     ) : (
       <svg className="w-4 h-4 ml-1 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
+      </svg>
+    );
+  };
+
+  // Temporal Data Sort Icon
+  const TemporalSortIcon = ({ field }: { field: 'period' | 'prompt_count' | 'total_tokens' | 'avg_quality' | 'unique_users' }) => {
+    if (temporalSortField !== field) {
+      return (
+        <svg className="w-4 h-4 ml-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+        </svg>
+      );
+    }
+    
+    return temporalSortDirection === 'asc' ? (
+      <svg className="w-4 h-4 ml-1 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+      </svg>
+    ) : (
+      <svg className="w-4 h-4 ml-1 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+      </svg>
+    );
+  };
+
+  // Model Analytics Sort Icon
+  const ModelSortIcon = ({ field }: { field: 'model' | 'prompt_count' | 'avg_quality' | 'avg_tokens' | 'total_cost' | 'avg_response_time' | 'usage_percentage' }) => {
+    if (modelSortField !== field) {
+      return (
+        <svg className="w-4 h-4 ml-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+        </svg>
+      );
+    }
+    
+    return modelSortDirection === 'asc' ? (
+      <svg className="w-4 h-4 ml-1 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+      </svg>
+    ) : (
+      <svg className="w-4 h-4 ml-1 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+      </svg>
+    );
+  };
+
+  // Category Analytics Sort Icon
+  const CategorySortIcon = ({ field }: { field: 'category' | 'prompt_count' | 'avg_quality' | 'usage_percentage' }) => {
+    if (categorySortField !== field) {
+      return (
+        <svg className="w-4 h-4 ml-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+        </svg>
+      );
+    }
+    
+    return categorySortDirection === 'asc' ? (
+      <svg className="w-4 h-4 ml-1 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+      </svg>
+    ) : (
+      <svg className="w-4 h-4 ml-1 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
       </svg>
     );
   };
@@ -288,34 +456,88 @@ export default function Analytics() {
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
               Usage Over Time
             </h2>
-            <select
-              value={temporalPeriod}
-              onChange={(e) => setTemporalPeriod(e.target.value)}
-              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            >
-              <option value="hourly">Hourly</option>
-              <option value="daily">Daily</option>
-              <option value="weekly">Weekly</option>
-            </select>
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Sorted by {temporalSortField.replace('_', ' ')} ({temporalSortDirection === 'asc' ? '↑' : '↓'})
+              </div>
+              <button
+                onClick={() => {
+                  setTemporalSortField('period');
+                  setTemporalSortDirection('asc');
+                }}
+                className="px-3 py-1 text-xs bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+              >
+                Reset Sort
+              </button>
+              <select
+                value={temporalPeriod}
+                onChange={(e) => setTemporalPeriod(e.target.value)}
+                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              >
+                <option value="hourly">Hourly</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+              </select>
+            </div>
           </div>
           
           <div className="overflow-x-auto">
             <table className="min-w-full table-auto">
               <thead>
                 <tr className="bg-gray-50 dark:bg-gray-700">
-                  <th className="px-4 py-2 text-left text-gray-900 dark:text-white">Period</th>
-                  <th className="px-4 py-2 text-left text-gray-900 dark:text-white">Prompts</th>
-                  <th className="px-4 py-2 text-left text-gray-900 dark:text-white">Tokens</th>
-                  <th className="px-4 py-2 text-left text-gray-900 dark:text-white">Avg Quality</th>
+                  <th 
+                    className="px-4 py-2 text-left text-gray-900 dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    onClick={() => handleTemporalSort('period')}
+                  >
+                    <div className="flex items-center">
+                      Period
+                      <TemporalSortIcon field="period" />
+                    </div>
+                  </th>
+                  <th 
+                    className="px-4 py-2 text-left text-gray-900 dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    onClick={() => handleTemporalSort('prompt_count')}
+                  >
+                    <div className="flex items-center">
+                      Prompts
+                      <TemporalSortIcon field="prompt_count" />
+                    </div>
+                  </th>
+                  <th 
+                    className="px-4 py-2 text-left text-gray-900 dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    onClick={() => handleTemporalSort('total_tokens')}
+                  >
+                    <div className="flex items-center">
+                      Tokens
+                      <TemporalSortIcon field="total_tokens" />
+                    </div>
+                  </th>
+                  <th 
+                    className="px-4 py-2 text-left text-gray-900 dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    onClick={() => handleTemporalSort('avg_quality')}
+                  >
+                    <div className="flex items-center">
+                      Avg Quality
+                      <TemporalSortIcon field="avg_quality" />
+                    </div>
+                  </th>
                   {temporalPeriod !== 'hourly' && (
-                    <th className="px-4 py-2 text-left text-gray-900 dark:text-white">Users</th>
+                    <th 
+                      className="px-4 py-2 text-left text-gray-900 dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                      onClick={() => handleTemporalSort('unique_users')}
+                    >
+                      <div className="flex items-center">
+                        Users
+                        <TemporalSortIcon field="unique_users" />
+                      </div>
+                    </th>
                   )}
                 </tr>
               </thead>
               <tbody>
-                {temporalData.data && temporalData.data.length > 0 ? (
-                  temporalData.data.map((item, index) => (
-                    <tr key={index} className="border-b dark:border-gray-600">
+                {getSortedTemporalData().length > 0 ? (
+                  getSortedTemporalData().map((item, index) => (
+                    <tr key={index} className="border-b dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                       <td className="px-4 py-2 text-gray-900 dark:text-white">{item.period}</td>
                       <td className="px-4 py-2 text-gray-900 dark:text-white">{item.prompt_count}</td>
                       <td className="px-4 py-2 text-gray-900 dark:text-white">{item.total_tokens.toLocaleString()}</td>
@@ -342,74 +564,211 @@ export default function Analytics() {
         </div>
       )}
 
-      {/* Model Performance and Categories Side by Side */}
-      <div className="grid lg:grid-cols-2 gap-8">
-        {/* Model Performance */}
-        {modelAnalytics && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-semibold mb-6 text-gray-900 dark:text-white">
+      {/* Model Performance */}
+      {modelAnalytics && (
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
               Model Performance
             </h2>
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Sorted by {modelSortField.replace('_', ' ')} ({modelSortDirection === 'asc' ? '↑' : '↓'})
+              </div>
+              <button
+                onClick={() => {
+                  setModelSortField('prompt_count');
+                  setModelSortDirection('desc');
+                }}
+                className="px-3 py-1 text-xs bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+              >
+                Reset Sort
+              </button>
+            </div>
+          </div>
             
-            <div className="space-y-4">
-              {modelAnalytics.models && modelAnalytics.models.length > 0 ? (
-                modelAnalytics.models.map((model, index) => (
-                  <div key={index} className="border dark:border-gray-600 rounded-lg p-4">
-                    <div className="flex justify-between items-center mb-2">
-                      <h3 className="font-semibold text-gray-900 dark:text-white">{model.model}</h3>
-                      <span className={`px-2 py-1 rounded text-sm ${getQualityColor(model.avg_quality)}`}>
-                        {model.avg_quality}/5.0
-                      </span>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-300">
-                      <div>Prompts: {model.prompt_count} ({model.usage_percentage}%)</div>
-                      <div>Avg Tokens: {model.avg_tokens}</div>
-                      <div>Total Cost: ${model.total_cost}</div>
-                      <div>Avg Response: {model.avg_response_time}ms</div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                  No model analytics available
-                </div>
-              )}
+            <div className="overflow-x-auto">
+              <table className="min-w-full table-auto">
+                <thead>
+                  <tr className="bg-gray-50 dark:bg-gray-700">
+                    <th 
+                      className="px-4 py-2 text-left text-gray-900 dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                      onClick={() => handleModelSort('model')}
+                    >
+                      <div className="flex items-center">
+                        Model
+                        <ModelSortIcon field="model" />
+                      </div>
+                    </th>
+                    <th 
+                      className="px-4 py-2 text-left text-gray-900 dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                      onClick={() => handleModelSort('prompt_count')}
+                    >
+                      <div className="flex items-center">
+                        Prompts
+                        <ModelSortIcon field="prompt_count" />
+                      </div>
+                    </th>
+                    <th 
+                      className="px-4 py-2 text-left text-gray-900 dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                      onClick={() => handleModelSort('avg_quality')}
+                    >
+                      <div className="flex items-center">
+                        Quality
+                        <ModelSortIcon field="avg_quality" />
+                      </div>
+                    </th>
+                    <th 
+                      className="px-4 py-2 text-left text-gray-900 dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                      onClick={() => handleModelSort('avg_tokens')}
+                    >
+                      <div className="flex items-center">
+                        Avg Tokens
+                        <ModelSortIcon field="avg_tokens" />
+                      </div>
+                    </th>
+                    <th 
+                      className="px-4 py-2 text-left text-gray-900 dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                      onClick={() => handleModelSort('total_cost')}
+                    >
+                      <div className="flex items-center">
+                        Cost
+                        <ModelSortIcon field="total_cost" />
+                      </div>
+                    </th>
+                    <th 
+                      className="px-4 py-2 text-left text-gray-900 dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                      onClick={() => handleModelSort('avg_response_time')}
+                    >
+                      <div className="flex items-center">
+                        Response
+                        <ModelSortIcon field="avg_response_time" />
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {getSortedModels().length > 0 ? (
+                    getSortedModels().map((model, index) => (
+                      <tr key={index} className="border-b dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        <td className="px-4 py-2 text-gray-900 dark:text-white font-medium">{model.model}</td>
+                        <td className="px-4 py-2 text-gray-900 dark:text-white">
+                          {model.prompt_count} ({model.usage_percentage}%)
+                        </td>
+                        <td className="px-4 py-2">
+                          <span className={`px-2 py-1 rounded text-sm ${getQualityColor(model.avg_quality)}`}>
+                            {model.avg_quality}
+                          </span>
+                        </td>
+                        <td className="px-4 py-2 text-gray-900 dark:text-white">{model.avg_tokens}</td>
+                        <td className="px-4 py-2 text-gray-900 dark:text-white">${model.total_cost}</td>
+                        <td className="px-4 py-2 text-gray-900 dark:text-white">{model.avg_response_time}ms</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={6} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                        No model analytics available
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
 
-        {/* Category Analysis */}
-        {categoryAnalytics && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-semibold mb-6 text-gray-900 dark:text-white">
+      {/* Category Analysis */}
+      {categoryAnalytics && (
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
               Category Distribution
             </h2>
-            
-            <div className="space-y-3">
-              {categoryAnalytics.categories && categoryAnalytics.categories.length > 0 ? (
-                categoryAnalytics.categories.slice(0, 10).map((category, index) => (
-                  <div key={index} className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded">
-                    <div>
-                      <div className="font-medium text-gray-900 dark:text-white">{category.category}</div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300">
-                        {category.prompt_count} prompts ({category.usage_percentage}%)
-                      </div>
-                    </div>
-                    <span className={`px-2 py-1 rounded text-sm ${getQualityColor(category.avg_quality)}`}>
-                      {category.avg_quality}
-                    </span>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                  No category analytics available
-                </div>
-              )}
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Sorted by {categorySortField.replace('_', ' ')} ({categorySortDirection === 'asc' ? '↑' : '↓'})
+              </div>
+              <button
+                onClick={() => {
+                  setCategorySortField('prompt_count');
+                  setCategorySortDirection('desc');
+                }}
+                className="px-3 py-1 text-xs bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+              >
+                Reset Sort
+              </button>
             </div>
           </div>
-        )}
-      </div>
+          
+          <div className="overflow-x-auto">
+            <table className="min-w-full table-auto">
+              <thead>
+                <tr className="bg-gray-50 dark:bg-gray-700">
+                  <th 
+                    className="px-4 py-2 text-left text-gray-900 dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    onClick={() => handleCategorySort('category')}
+                  >
+                    <div className="flex items-center">
+                      Category
+                      <CategorySortIcon field="category" />
+                    </div>
+                  </th>
+                  <th 
+                    className="px-4 py-2 text-left text-gray-900 dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    onClick={() => handleCategorySort('prompt_count')}
+                  >
+                    <div className="flex items-center">
+                      Prompts
+                      <CategorySortIcon field="prompt_count" />
+                    </div>
+                  </th>
+                  <th 
+                    className="px-4 py-2 text-left text-gray-900 dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    onClick={() => handleCategorySort('usage_percentage')}
+                  >
+                    <div className="flex items-center">
+                      Usage %
+                      <CategorySortIcon field="usage_percentage" />
+                    </div>
+                  </th>
+                  <th 
+                    className="px-4 py-2 text-left text-gray-900 dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    onClick={() => handleCategorySort('avg_quality')}
+                  >
+                    <div className="flex items-center">
+                      Avg Quality
+                      <CategorySortIcon field="avg_quality" />
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {getSortedCategories().length > 0 ? (
+                  getSortedCategories().slice(0, 10).map((category, index) => (
+                    <tr key={index} className="border-b dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                      <td className="px-4 py-2 text-gray-900 dark:text-white font-medium">{category.category}</td>
+                      <td className="px-4 py-2 text-gray-900 dark:text-white">{category.prompt_count}</td>
+                      <td className="px-4 py-2 text-gray-900 dark:text-white">{category.usage_percentage}%</td>
+                      <td className="px-4 py-2">
+                        <span className={`px-2 py-1 rounded text-sm ${getQualityColor(category.avg_quality)}`}>
+                          {category.avg_quality}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                      No category analytics available
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Top Users */}
       {userAnalytics && (
