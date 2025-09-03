@@ -1,0 +1,64 @@
+{
+  "generated_at": "2025-09-03T15:48:18.253337",
+  "total_prompts": 40,
+  "unique_users": 39,
+  "date_range": {
+    "start": "2024-01-15T09:30:15Z",
+    "end": "2024-03-22T09:10:15Z"
+  },
+  "models": {
+    "gpt-4": 12,
+    "claude-3-opus": 7,
+    "gpt-3.5-turbo": 7,
+    "gemini-pro": 5,
+    "claude-3-sonnet": 5,
+    "gpt-4-turbo": 4
+  },
+  "categories": {
+    "business": 2,
+    "education": 4,
+    "programming": 5,
+    "health": 2,
+    "creative": 2,
+    "analysis": 1,
+    "communication": 1,
+    "finance": 2,
+    "cooking": 1,
+    "fitness": 1,
+    "incomplete": 2,
+    "review": 1,
+    "research": 1,
+    "travel": 1,
+    "academic": 1,
+    "innovation": 1,
+    "gaming": 1,
+    "marketing": 2,
+    "translation": 1,
+    "design": 1,
+    "self-improvement": 1,
+    "data-science": 1,
+    "security": 1,
+    "technology": 1,
+    "documentation": 1,
+    "environment": 1,
+    "infrastructure": 1
+  },
+  "quality_stats": {
+    "mean": 4.4300000000000015,
+    "min": 1.1,
+    "max": 4.9,
+    "median": 4.65
+  },
+  "token_stats": {
+    "mean": 1288.75,
+    "min": 25,
+    "max": 3200,
+    "median": 1285.0
+  },
+  "prompt_length_stats": {
+    "mean": 106.425,
+    "min": 3,
+    "max": 276,
+    "median": 101.5
+  }
+}

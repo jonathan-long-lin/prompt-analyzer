@@ -1,16 +1,17 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import re
 import uvicorn
+from data_service import data_service
 
 app = FastAPI(title="Prompt Analyzer API", description="API for analyzing prompts", version="1.0.0")
 
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Next.js dev server
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],  # Next.js dev server
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -33,6 +34,56 @@ class AnalysisResult(BaseModel):
 @app.get("/")
 async def root():
     return {"message": "Prompt Analyzer API is running"}
+
+@app.get("/analytics/overview")
+async def get_analytics_overview():
+    """Get overview analytics from the dataset."""
+    try:
+        return data_service.get_overview_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@app.get("/analytics/users")
+async def get_user_analytics(limit: int = 10):
+    """Get user aggregation analytics."""
+    try:
+        return data_service.get_user_aggregations(limit=limit)
+    except Exception as e:
+        return {"error": str(e)}
+
+@app.get("/analytics/temporal")
+async def get_temporal_analytics(period: str = "daily"):
+    """Get temporal analysis. Period can be 'hourly', 'daily', or 'weekly'."""
+    try:
+        if period not in ["hourly", "daily", "weekly"]:
+            return {"error": "Period must be 'hourly', 'daily', or 'weekly'"}
+        return data_service.get_temporal_analysis(period=period)
+    except Exception as e:
+        return {"error": str(e)}
+
+@app.get("/analytics/models")
+async def get_model_analytics():
+    """Get model performance analytics."""
+    try:
+        return data_service.get_model_performance()
+    except Exception as e:
+        return {"error": str(e)}
+
+@app.get("/analytics/categories")
+async def get_category_analytics():
+    """Get category analysis."""
+    try:
+        return data_service.get_category_analysis()
+    except Exception as e:
+        return {"error": str(e)}
+
+@app.get("/analytics/quality")
+async def get_quality_analytics():
+    """Get quality insights and patterns."""
+    try:
+        return data_service.get_quality_insights()
+    except Exception as e:
+        return {"error": str(e)}
 
 @app.post("/analyze", response_model=AnalysisResult)
 async def analyze_prompt(request: PromptRequest):

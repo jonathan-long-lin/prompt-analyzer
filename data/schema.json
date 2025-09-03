@@ -1,0 +1,118 @@
+{
+  "schema_version": "1.0",
+  "description": "Prompt dataset schema for the Prompt Analyzer Dashboard",
+  "fields": {
+    "prompt": {
+      "type": "string",
+      "description": "The actual prompt text submitted by the user",
+      "required": true,
+      "example": "Write a comprehensive business plan for a sustainable coffee shop"
+    },
+    "user": {
+      "type": "string", 
+      "description": "Display name or username of the person who submitted the prompt",
+      "required": true,
+      "example": "Sarah Johnson"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "Unique identifier for the user",
+      "required": true,
+      "format": "usr_XXX",
+      "example": "usr_001"
+    },
+    "timestamp": {
+      "type": "string",
+      "description": "ISO 8601 timestamp when the prompt was submitted",
+      "required": true,
+      "format": "YYYY-MM-DDTHH:mm:ssZ",
+      "example": "2024-01-15T09:30:15Z"
+    },
+    "model": {
+      "type": "string",
+      "description": "The AI model used to process the prompt",
+      "required": true,
+      "enum": ["gpt-3.5-turbo", "gpt-4", "gpt-4-turbo", "claude-3-opus", "claude-3-sonnet", "gemini-pro"],
+      "example": "gpt-4"
+    },
+    "category": {
+      "type": "string",
+      "description": "Category classification of the prompt",
+      "required": true,
+      "enum": [
+        "business", "education", "programming", "health", "creative", 
+        "analysis", "communication", "finance", "cooking", "fitness",
+        "incomplete", "review", "research", "travel", "academic",
+        "innovation", "gaming", "marketing", "translation", "design",
+        "self-improvement", "data-science", "security", "technology",
+        "environment", "documentation", "infrastructure"
+      ],
+      "example": "business"
+    },
+    "tokens_used": {
+      "type": "integer",
+      "description": "Number of tokens consumed in the response",
+      "required": true,
+      "minimum": 1,
+      "example": 1250
+    },
+    "response_quality": {
+      "type": "number",
+      "description": "Quality rating of the AI response (1-5 scale)",
+      "required": true,
+      "minimum": 1.0,
+      "maximum": 5.0,
+      "example": 4.8
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Unique identifier for the user session",
+      "required": true,
+      "format": "sess_XXXXXX",
+      "example": "sess_abc123"
+    },
+    "prompt_length": {
+      "type": "integer",
+      "description": "Character length of the prompt text",
+      "required": false,
+      "minimum": 1,
+      "example": 108
+    },
+    "response_time_ms": {
+      "type": "integer",
+      "description": "Response time in milliseconds",
+      "required": false,
+      "minimum": 1,
+      "example": 3200
+    },
+    "cost_usd": {
+      "type": "number",
+      "description": "Cost of the API call in USD",
+      "required": false,
+      "minimum": 0,
+      "example": 0.087
+    }
+  },
+  "datasets": [
+    {
+      "filename": "prompts.jsonl",
+      "description": "Initial dataset with basic metadata",
+      "records": 25,
+      "date_range": "2024-01-15 to 2024-01-21"
+    },
+    {
+      "filename": "recent_prompts.jsonl", 
+      "description": "Recent dataset with extended metadata including performance metrics",
+      "records": 15,
+      "date_range": "2024-03-15 to 2024-03-22"
+    }
+  ],
+  "statistics": {
+    "total_records": 40,
+    "unique_users": 40,
+    "unique_models": 6,
+    "categories": 27,
+    "quality_range": "1.1 - 4.9",
+    "token_range": "25 - 3200"
+  }
+}

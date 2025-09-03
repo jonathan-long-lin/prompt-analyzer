@@ -1,18 +1,19 @@
 # Prompt Analyzer Dashboard
 
-A comprehensive dashboard for analyzing prompts with a Next.js frontend and FastAPI backend.
+A comprehensive dashboard for analyzing prompts with a Next.js frontend and FastAPI backend, featuring real-time analysis and comprehensive analytics from historical data.
 
 ## Features
 
 - **Real-time Prompt Analysis**: Analyze prompts for various metrics including word count, readability, complexity, and sentiment
-- **Interactive Dashboard**: Clean, responsive UI built with Next.js and Tailwind CSS
-- **RESTful API**: FastAPI backend providing analysis endpoints
-- **Multiple Analysis Metrics**:
-  - Basic metrics (word count, character count, sentences, paragraphs)
-  - Readability score and complexity level
-  - Keyword extraction
-  - Sentiment analysis
-  - Improvement suggestions
+- **Analytics Dashboard**: Comprehensive analytics from historical prompt data including:
+  - User aggregations and behavior patterns
+  - Temporal analysis (hourly, daily, weekly trends)
+  - Model performance comparisons
+  - Category distribution and insights
+  - Quality patterns and insights
+- **Interactive UI**: Clean, responsive dashboard with tabbed navigation
+- **RESTful API**: FastAPI backend with both analysis and analytics endpoints
+- **Rich Dataset**: 40+ sample prompts with realistic metadata for testing and demonstration
 
 ## Architecture
 
@@ -78,17 +79,26 @@ A comprehensive dashboard for analyzing prompts with a Next.js frontend and Fast
 
 ## API Endpoints
 
-### POST /analyze
-Analyzes a prompt and returns comprehensive metrics.
+### Analysis Endpoints
+- **POST /analyze** - Analyze a single prompt
+- **GET /** - API health check
 
-**Request Body:**
+### Analytics Endpoints
+- **GET /analytics/overview** - Dataset overview statistics
+- **GET /analytics/users** - User aggregation analytics
+- **GET /analytics/temporal** - Temporal analysis (hourly/daily/weekly)
+- **GET /analytics/models** - Model performance comparison
+- **GET /analytics/categories** - Category distribution analysis
+- **GET /analytics/quality** - Quality insights and patterns
+
+### Analysis Request Body:
 ```json
 {
   "prompt": "Your prompt text here"
 }
 ```
 
-**Response:**
+### Analysis Response:
 ```json
 {
   "word_count": 25,
@@ -103,13 +113,61 @@ Analyzes a prompt and returns comprehensive metrics.
 }
 ```
 
+### Analytics Response Examples:
+
+**Overview Stats:**
+```json
+{
+  "total_prompts": 40,
+  "unique_users": 39,
+  "date_range": {
+    "start": "2024-01-15T09:30:15Z",
+    "end": "2024-03-22T09:10:15Z"
+  },
+  "total_tokens": 51550,
+  "avg_quality": 4.43,
+  "total_cost": 1.64
+}
+```
+
+**User Analytics:**
+```json
+{
+  "users": [
+    {
+      "user_id": "usr_001",
+      "user_name": "Sarah Johnson",
+      "prompt_count": 5,
+      "total_tokens": 2500,
+      "avg_quality": 4.6,
+      "total_cost": 0.15
+    }
+  ],
+  "total_users": 39
+}
+```
+
 ## Usage
 
+### Dashboard Navigation
+
+1. **Prompt Analyzer Tab**: 
+   - Enter your prompt in the text area
+   - Click "Analyze Prompt" to get instant analysis
+   - Review metrics including readability, sentiment, keywords, and suggestions
+
+2. **Analytics Dashboard Tab**:
+   - View comprehensive analytics from the historical dataset
+   - Explore user behavior patterns and aggregations
+   - Analyze temporal trends (hourly, daily, weekly)
+   - Compare model performance metrics
+   - Review category distribution and insights
+
+### Accessing the Application
+
 1. Open the dashboard at http://localhost:3000
-2. Enter your prompt in the text area
-3. Click "Analyze Prompt" to get instant analysis
-4. Review the comprehensive metrics and suggestions
-5. Use the insights to improve your prompts
+2. Use the tab navigation to switch between Analyzer and Analytics
+3. Both tabs provide real-time data from the backend API
 
 ## Development
 
