@@ -164,10 +164,10 @@ class PromptDataService:
 
             # Get user name for this user_id
             try:
-                if "user_name" in self.df.columns:
+                if "user" in self.df.columns:
                     user_name_row = (
                         self.df.filter(pl.col("user_id") == user_id)
-                        .select("user_name")
+                        .select("user")
                         .head(1)
                     )
                     if len(user_name_row) > 0:
@@ -339,8 +339,8 @@ class PromptDataService:
                 pl.col("response_time_ms").mean().alias("response_time_ms_mean")
             )
 
-        if "cost" in self.df.columns:
-            agg_cols.append(pl.col("cost").sum().alias("cost_sum"))
+        if "cost_usd" in self.df.columns:
+            agg_cols.append(pl.col("cost_usd").sum().alias("cost_usd_sum"))
 
         model_stats = (
             self.df.group_by("model")
@@ -357,7 +357,7 @@ class PromptDataService:
             avg_response_time = convert_to_json_serializable(
                 row.get("response_time_ms_mean")
             )
-            total_cost = convert_to_json_serializable(row.get("cost_sum"))
+            total_cost = convert_to_json_serializable(row.get("cost_usd_sum"))
 
             result.append(
                 {
