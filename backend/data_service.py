@@ -351,17 +351,32 @@ class PromptDataService:
         result = []
         total_prompts = len(self.df)
         for row in model_stats.iter_rows(named=True):
+            # Convert values safely using our converter
+            avg_tokens = convert_to_json_serializable(row["tokens_used_mean"])
+            avg_quality = convert_to_json_serializable(row["response_quality_mean"])
+            avg_response_time = convert_to_json_serializable(
+                row.get("response_time_ms_mean")
+            )
+            total_cost = convert_to_json_serializable(row.get("cost_sum"))
+
             result.append(
                 {
                     "model": row["model"],
                     "prompt_count": int(row["prompt_count"]),
                     "total_tokens": int(row["tokens_used_sum"]),
-                    "avg_tokens": round(float(row["tokens_used_mean"]), 1),
-                    "avg_quality": round(float(row["response_quality_mean"]), 2),
-                    "avg_response_time": round(
-                        float(row.get("response_time_ms_mean", 0)), 0
-                    ),
-                    "total_cost": round(float(row.get("cost_sum", 0)), 3),
+                    "avg_tokens": round(float(avg_tokens), 1)
+                    if avg_tokens is not None and isinstance(avg_tokens, (int, float))
+                    else 0.0,
+                    "avg_quality": round(float(avg_quality), 2)
+                    if avg_quality is not None and isinstance(avg_quality, (int, float))
+                    else 0.0,
+                    "avg_response_time": round(float(avg_response_time), 0)
+                    if avg_response_time is not None
+                    and isinstance(avg_response_time, (int, float))
+                    else 0.0,
+                    "total_cost": round(float(total_cost), 3)
+                    if total_cost is not None and isinstance(total_cost, (int, float))
+                    else 0.0,
                     "usage_percentage": round(
                         (row["prompt_count"] / total_prompts) * 100, 1
                     ),
