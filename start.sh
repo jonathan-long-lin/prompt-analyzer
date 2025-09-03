@@ -24,7 +24,7 @@ sleep 3
 
 # Start Next.js frontend
 echo "🌐 Starting Next.js frontend on port 3000..."
-cd ../frontend && npm run dev &
+cd frontend && npm run dev &
 FRONTEND_PID=$!
 
 echo "✅ Both servers are running!"

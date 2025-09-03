@@ -77,6 +77,14 @@ class PromptDataService:
 
         if all_data:
             self.df = pd.DataFrame(all_data)
+            print(f"Loaded {len(self.df)} records")
+            print(f"Available columns: {list(self.df.columns)}")
+
+            # Rename 'user' column to 'user_name' if it exists
+            if "user" in self.df.columns:
+                self.df = self.df.rename(columns={"user": "user_name"})
+                print("Renamed 'user' column to 'user_name'")
+
             # Convert timestamp to datetime
             self.df["timestamp"] = pd.to_datetime(self.df["timestamp"])
             # Add derived columns
@@ -109,20 +117,20 @@ class PromptDataService:
         if self.df is None or self.df.empty:
             return {}
 
-        user_stats = (
-            self.df.groupby("user_id")
-            .agg(
-                {
-                    "prompt": "count",
-                    "tokens_used": ["sum", "mean"],
-                    "response_quality": "mean",
-                    "prompt_length": "mean",
-                    "timestamp": ["min", "max"],
-                    "cost_usd": "sum" if "cost_usd" in self.df.columns else lambda x: 0,
-                }
-            )
-            .round(2)
-        )
+        # Prepare aggregation dictionary
+        agg_dict = {
+            "prompt": "count",
+            "tokens_used": ["sum", "mean"],
+            "response_quality": "mean",
+            "prompt_length": "mean",
+            "timestamp": ["min", "max"],
+        }
+
+        # Add cost_usd aggregation if column exists
+        if "cost_usd" in self.df.columns:
+            agg_dict["cost_usd"] = "sum"
+
+        user_stats = self.df.groupby("user_id").agg(agg_dict).round(2)
 
         # Flatten column names
         user_stats.columns = [
@@ -130,16 +138,37 @@ class PromptDataService:
             for col in user_stats.columns.values
         ]
 
-        # Add user names
-        user_names = self.df.groupby("user_id")["user"].first()
-        user_stats["user_name"] = user_names
-
         # Sort by prompt count
         user_stats = user_stats.sort_values("prompt_count", ascending=False)
 
         # Convert to list of dictionaries
         result = []
         for user_id, row in user_stats.head(limit).iterrows():
+            # Get user name for this user_id
+            try:
+                if "user_name" in self.df.columns:
+                    # Use .values[0] to get the actual value directly
+                    user_matches = self.df[self.df["user_id"] == user_id][
+                        "user_name"
+                    ].values
+                    if len(user_matches) > 0:
+                        user_name_value = user_matches[0]
+                        # Check if it's NaN using numpy/pandas safe methods
+                        if user_name_value is None or str(user_name_value).lower() in [
+                            "nan",
+                            "none",
+                        ]:
+                            user_name = f"User {user_id}"
+                        else:
+                            user_name = str(user_name_value)
+                    else:
+                        user_name = f"User {user_id}"
+                else:
+                    user_name = f"User {user_id}"
+            except Exception as e:
+                # Fallback if anything goes wrong
+                user_name = f"User {user_id}"
+
             avg_tokens = convert_to_json_serializable(row["tokens_used_mean"])
             avg_quality = convert_to_json_serializable(row["response_quality_mean"])
             avg_prompt_length = convert_to_json_serializable(row["prompt_length_mean"])
@@ -147,7 +176,10 @@ class PromptDataService:
             result.append(
                 {
                     "user_id": str(user_id),
-                    "user_name": str(row["user_name"]),
+                    "user_name": str(user_name)
+                    .strip("")
+                    .replace("[nan '", "")
+                    .replace("']", ""),
                     "prompt_count": convert_to_json_serializable(row["prompt_count"]),
                     "total_tokens": convert_to_json_serializable(
                         row["tokens_used_sum"]
@@ -163,7 +195,9 @@ class PromptDataService:
                     else 0.0,
                     "first_prompt": row["timestamp_min"].strftime("%Y-%m-%dT%H:%M:%S"),
                     "last_prompt": row["timestamp_max"].strftime("%Y-%m-%dT%H:%M:%S"),
-                    "total_cost": round(float(row.get("cost_usd_sum", 0)), 3),
+                    "total_cost": round(float(row.get("cost_usd_sum", 0)), 3)
+                    if "cost_usd_sum" in row and pd.notna(row.get("cost_usd_sum", 0))
+                    else 0.0,
                 }
             )
 
@@ -287,7 +321,7 @@ class PromptDataService:
                     "response_time_ms": "mean"
                     if "response_time_ms" in self.df.columns
                     else lambda x: 0,
-                    "cost_usd": "sum" if "cost_usd" in self.df.columns else lambda x: 0,
+                    "cost": "sum" if "cost" in self.df.columns else lambda x: 0,
                 }
             )
             .round(2)
@@ -309,7 +343,7 @@ class PromptDataService:
                     "avg_tokens": round(row["tokens_used_mean"], 1),
                     "avg_quality": round(row["response_quality_mean"], 2),
                     "avg_response_time": round(row.get("response_time_ms_mean", 0), 0),
-                    "total_cost": round(row.get("cost_usd_sum", 0), 3),
+                    "total_cost": round(row.get("cost", 0), 3),
                     "usage_percentage": round(
                         (row["prompt_count"] / len(self.df)) * 100, 1
                     ),
