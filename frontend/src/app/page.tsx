@@ -5,7 +5,7 @@ import PromptAnalyzer from '@/components/PromptAnalyzer';
 import Analytics from '@/components/Analytics';
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState('analyzer');
+  const [activeTab, setActiveTab] = useState('analytics');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
@@ -23,16 +23,6 @@ export default function Home() {
         <div className="flex justify-center mb-8">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-1 shadow-md">
             <button
-              onClick={() => setActiveTab('analyzer')}
-              className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                activeTab === 'analyzer'
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
-              }`}
-            >
-              Prompt Analyzer
-            </button>
-            <button
               onClick={() => setActiveTab('analytics')}
               className={`px-6 py-2 rounded-lg font-medium transition-colors ${
                 activeTab === 'analytics'
@@ -42,11 +32,21 @@ export default function Home() {
             >
               Analytics Dashboard
             </button>
+            <button
+              onClick={() => setActiveTab('analyzer')}
+              className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                activeTab === 'analyzer'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+              }`}
+            >
+              Prompt Analyzer
+            </button>
           </div>
         </div>
         
         <main>
-          {activeTab === 'analyzer' ? <PromptAnalyzer /> : <Analytics />}
+          {activeTab === 'analytics' ? <Analytics /> : <PromptAnalyzer />}
         </main>
       </div>
     </div>
