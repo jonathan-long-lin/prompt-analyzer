@@ -1,0 +1,28 @@
+INFO:     Started server process [33106]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     127.0.0.1:60321 - "GET /analytics/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60323 - "GET /analytics/users?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60325 - "GET /analytics/temporal?period=daily HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60327 - "GET /analytics/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60328 - "GET /analytics/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60321 - "GET /analytics/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60323 - "GET /analytics/users?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60325 - "GET /analytics/temporal?period=daily HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60327 - "GET /analytics/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60328 - "GET /analytics/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60368 - "GET /docs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60368 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60391 - "POST /analyze HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60425 - "GET /analytics/users?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61799 - "GET /analytics/users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61976 - "GET /analytics/users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62606 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62606 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62607 - "GET /docs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62607 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [33106]
