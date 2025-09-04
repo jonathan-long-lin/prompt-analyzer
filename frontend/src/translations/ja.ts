@@ -60,6 +60,15 @@ export const ja = {
     loading: "読み込み中...",
     error: "エラー",
     sortedBy: "ソート順",
+    
+    // Chart controls
+    tableView: "テーブル表示",
+    chartView: "チャート表示",
+    chartMetric: "表示指標",
+    promptCountMetric: "プロンプト数",
+    tokensMetric: "トークン数",
+    qualityMetric: "品質",
+    usersMetric: "ユーザー数",
   },
   
   // Prompt Analyzer

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 interface OverviewStats {
   total_prompts: number;
@@ -93,6 +94,10 @@ export default function Analytics() {
   // Sort state for category analytics table
   const [categorySortField, setCategorySortField] = useState<'category' | 'prompt_count' | 'avg_quality' | 'usage_percentage'>('prompt_count');
   const [categorySortDirection, setCategorySortDirection] = useState<'asc' | 'desc'>('desc');
+
+  // Temporal chart state
+  const [temporalViewMode, setTemporalViewMode] = useState<'table' | 'chart'>('chart');
+  const [chartMetric, setChartMetric] = useState<'prompt_count' | 'total_tokens' | 'avg_quality' | 'unique_users'>('prompt_count');
 
   const fetchAnalytics = async () => {
     setLoading(true);
@@ -285,6 +290,68 @@ export default function Analytics() {
     });
   };
 
+  // Chart data formatting
+  const formatChartData = () => {
+    if (!temporalData?.data) return [];
+    
+    return temporalData.data.map(item => ({
+      period: item.period_value || item.period,
+      prompt_count: item.prompt_count,
+      total_tokens: item.total_tokens,
+      avg_quality: item.avg_quality,
+      unique_users: item.unique_users || 0,
+    }));
+  };
+
+  // Custom tooltip component
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-white dark:bg-gray-800 p-4 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg">
+          <p className="font-semibold text-gray-900 dark:text-white mb-2">{label}</p>
+          <div className="space-y-1">
+            <p className="text-blue-600 dark:text-blue-400">
+              {getText('analytics.prompts')}: {data.prompt_count?.toLocaleString()}
+            </p>
+            <p className="text-green-600 dark:text-green-400">
+              {getText('analytics.tokens')}: {data.total_tokens?.toLocaleString()}
+            </p>
+            <p className="text-purple-600 dark:text-purple-400">
+              {getText('analytics.quality')}: {data.avg_quality}
+            </p>
+            {temporalPeriod !== 'hourly' && (
+              <p className="text-orange-600 dark:text-orange-400">
+                {getText('analytics.users')}: {data.unique_users}
+              </p>
+            )}
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const getMetricColor = (metric: string) => {
+    switch (metric) {
+      case 'prompt_count': return '#2563eb'; // blue
+      case 'total_tokens': return '#16a34a'; // green
+      case 'avg_quality': return '#9333ea'; // purple
+      case 'unique_users': return '#ea580c'; // orange
+      default: return '#2563eb';
+    }
+  };
+
+  const getMetricLabel = (metric: string) => {
+    switch (metric) {
+      case 'prompt_count': return getText('analytics.promptCountMetric');
+      case 'total_tokens': return getText('analytics.tokensMetric');
+      case 'avg_quality': return getText('analytics.qualityMetric');
+      case 'unique_users': return getText('analytics.usersMetric');
+      default: return metric;
+    }
+  };
+
   const SortIcon = ({ field }: { field: keyof UserAnalytics['users'][0] }) => {
     if (sortField !== field) {
       return (
@@ -459,18 +526,69 @@ export default function Analytics() {
               {getText('analytics.temporalAnalysis')}
             </h2>
             <div className="flex items-center gap-4">
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                Sorted by {temporalSortField.replace('_', ' ')} ({temporalSortDirection === 'asc' ? '↑' : '↓'})
+              {/* View Toggle */}
+              <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+                <button
+                  onClick={() => setTemporalViewMode('table')}
+                  className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                    temporalViewMode === 'table'
+                      ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                  }`}
+                >
+                  {getText('analytics.tableView')}
+                </button>
+                <button
+                  onClick={() => setTemporalViewMode('chart')}
+                  className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                    temporalViewMode === 'chart'
+                      ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                  }`}
+                >
+                  {getText('analytics.chartView')}
+                </button>
               </div>
-              <button
-                onClick={() => {
-                  setTemporalSortField('period');
-                  setTemporalSortDirection('asc');
-                }}
-                className="px-3 py-1 text-xs bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
-              >
-                {getText('analytics.resetSort')}
-              </button>
+              
+              {/* Chart Metric Selector - only show in chart mode */}
+              {temporalViewMode === 'chart' && (
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-600 dark:text-gray-300">
+                    {getText('analytics.chartMetric')}:
+                  </label>
+                  <select
+                    value={chartMetric}
+                    onChange={(e) => setChartMetric(e.target.value as any)}
+                    className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                  >
+                    <option value="prompt_count">{getText('analytics.promptCountMetric')}</option>
+                    <option value="total_tokens">{getText('analytics.tokensMetric')}</option>
+                    <option value="avg_quality">{getText('analytics.qualityMetric')}</option>
+                    {temporalPeriod !== 'hourly' && (
+                      <option value="unique_users">{getText('analytics.usersMetric')}</option>
+                    )}
+                  </select>
+                </div>
+              )}
+              
+              {/* Table controls - only show in table mode */}
+              {temporalViewMode === 'table' && (
+                <>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    Sorted by {temporalSortField.replace('_', ' ')} ({temporalSortDirection === 'asc' ? '↑' : '↓'})
+                  </div>
+                  <button
+                    onClick={() => {
+                      setTemporalSortField('period');
+                      setTemporalSortDirection('asc');
+                    }}
+                    className="px-3 py-1 text-xs bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+                  >
+                    {getText('analytics.resetSort')}
+                  </button>
+                </>
+              )}
+              
               <select
                 value={temporalPeriod}
                 onChange={(e) => setTemporalPeriod(e.target.value)}
@@ -484,6 +602,36 @@ export default function Analytics() {
             </div>
           </div>
           
+          {/* Chart View */}
+          {temporalViewMode === 'chart' ? (
+            <div className="h-96">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={formatChartData()} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                  <XAxis 
+                    dataKey="period" 
+                    className="text-gray-600 dark:text-gray-300"
+                    tick={{ fontSize: 12 }}
+                  />
+                  <YAxis 
+                    className="text-gray-600 dark:text-gray-300"
+                    tick={{ fontSize: 12 }}
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey={chartMetric}
+                    stroke={getMetricColor(chartMetric)}
+                    strokeWidth={2}
+                    dot={{ fill: getMetricColor(chartMetric), strokeWidth: 2, r: 4 }}
+                    activeDot={{ r: 6 }}
+                    name={getMetricLabel(chartMetric)}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full table-auto">
               <thead>
@@ -564,6 +712,7 @@ export default function Analytics() {
               </tbody>
             </table>
           </div>
+          )}
         </div>
       )}
 

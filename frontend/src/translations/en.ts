@@ -60,6 +60,15 @@ export const en = {
     loading: "Loading...",
     error: "Error",
     sortedBy: "Sorted by",
+    
+    // Chart controls
+    tableView: "Table View",
+    chartView: "Chart View", 
+    chartMetric: "Chart Metric",
+    promptCountMetric: "Prompt Count",
+    tokensMetric: "Tokens",
+    qualityMetric: "Quality",
+    usersMetric: "Users",
   },
   
   // Prompt Analyzer
