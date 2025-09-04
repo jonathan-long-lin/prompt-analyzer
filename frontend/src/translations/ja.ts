@@ -34,6 +34,7 @@ export const ja = {
     
     // Temporal Analysis
     temporalAnalysis: "時系列分析",
+    hourly: "時間別",
     daily: "日次",
     weekly: "週次",
     monthly: "月次",
@@ -64,10 +65,26 @@ export const ja = {
   promptAnalyzer: {
     title: "プロンプト分析器",
     enterPrompt: "プロンプトを入力してください",
+    enterPromptError: "分析するプロンプトを入力してください",
     analyze: "分析",
     analyzing: "分析中...",
+    clear: "クリア",
     results: "結果",
+    basicMetrics: "基本指標",
     suggestions: "改善提案",
+    wordCount: "単語数",
+    characterCount: "文字数",
+    sentenceCount: "文数",
+    paragraphCount: "段落数",
+    readabilityScore: "読みやすさスコア",
+    complexityLevel: "複雑さレベル",
+    keywords: "キーワード",
+    sentiment: "感情",
+    readability: "読みやすさ",
+    score: "スコア",
+    level: "レベル",
+    sentimentAnalysis: "感情分析",
+    analysisError: "プロンプトの分析に失敗しました。バックエンドが実行されていることを確認してください。",
     // Add more translations as needed
   }
 };

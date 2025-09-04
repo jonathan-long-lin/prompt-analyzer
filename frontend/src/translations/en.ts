@@ -34,6 +34,7 @@ export const en = {
     
     // Temporal Analysis
     temporalAnalysis: "Temporal Analysis",
+    hourly: "Hourly",
     daily: "Daily",
     weekly: "Weekly",
     monthly: "Monthly",
@@ -64,10 +65,26 @@ export const en = {
   promptAnalyzer: {
     title: "Prompt Analyzer",
     enterPrompt: "Enter your prompt here",
+    enterPromptError: "Please enter a prompt to analyze",
     analyze: "Analyze",
     analyzing: "Analyzing...",
+    clear: "Clear",
     results: "Results",
+    basicMetrics: "Basic Metrics",
     suggestions: "Suggestions",
+    wordCount: "Word Count",
+    characterCount: "Character Count",
+    sentenceCount: "Sentence Count",
+    paragraphCount: "Paragraph Count",
+    readabilityScore: "Readability Score",
+    complexityLevel: "Complexity Level",
+    keywords: "Keywords",
+    sentiment: "Sentiment",
+    readability: "Readability",
+    score: "Score",
+    level: "Level",
+    sentimentAnalysis: "Sentiment Analysis",
+    analysisError: "Failed to analyze prompt. Make sure the backend is running.",
     // Add more translations as needed
   }
 };

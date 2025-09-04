@@ -446,7 +446,7 @@ export default function Analytics() {
       ) : !loading && (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            No overview data available
+            {getText('analytics.noDataAvailable')}
           </div>
         </div>
       )}
@@ -469,16 +469,17 @@ export default function Analytics() {
                 }}
                 className="px-3 py-1 text-xs bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
               >
-                Reset Sort
+                {getText('analytics.resetSort')}
               </button>
               <select
                 value={temporalPeriod}
                 onChange={(e) => setTemporalPeriod(e.target.value)}
                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               >
-                <option value="hourly">Hourly</option>
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
+                <option value="hourly">{getText('analytics.hourly') || 'Hourly'}</option>
+                <option value="daily">{getText('analytics.daily')}</option>
+                <option value="weekly">{getText('analytics.weekly')}</option>
+                <option value="monthly">{getText('analytics.monthly')}</option>
               </select>
             </div>
           </div>
@@ -492,7 +493,7 @@ export default function Analytics() {
                     onClick={() => handleTemporalSort('period')}
                   >
                     <div className="flex items-center">
-                      Period
+                      {getText('analytics.period')}
                       <TemporalSortIcon field="period" />
                     </div>
                   </th>
@@ -501,7 +502,7 @@ export default function Analytics() {
                     onClick={() => handleTemporalSort('prompt_count')}
                   >
                     <div className="flex items-center">
-                      Prompts
+                      {getText('analytics.prompts')}
                       <TemporalSortIcon field="prompt_count" />
                     </div>
                   </th>
@@ -685,7 +686,7 @@ export default function Analytics() {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
-              Category Distribution
+              {getText('analytics.categoryDistribution')}
             </h2>
             <div className="flex items-center gap-4">
               <div className="text-sm text-gray-500 dark:text-gray-400">
@@ -777,11 +778,11 @@ export default function Analytics() {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
-              Top Users (by Activity)
+              {getText('analytics.topUsers')}
             </h2>
             <div className="flex items-center gap-4">
               <div className="text-sm text-gray-500 dark:text-gray-400">
-                Sorted by {sortField.replace('_', ' ')} ({sortDirection === 'asc' ? '↑' : '↓'})
+                {getText('analytics.sortedBy')} {sortField.replace('_', ' ')} ({sortDirection === 'asc' ? '↑' : '↓'})
               </div>
               <button
                 onClick={() => {

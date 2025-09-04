@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface AnalysisResult {
   word_count: number;
@@ -15,6 +16,7 @@ interface AnalysisResult {
 }
 
 export default function PromptAnalyzer() {
+  const { t, getText } = useLanguage();
   const [prompt, setPrompt] = useState('');
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -22,7 +24,7 @@ export default function PromptAnalyzer() {
 
   const analyzePrompt = async () => {
     if (!prompt.trim()) {
-      setError('Please enter a prompt to analyze');
+      setError(getText('promptAnalyzer.enterPromptError') || 'Please enter a prompt to analyze');
       return;
     }
 
@@ -45,7 +47,7 @@ export default function PromptAnalyzer() {
       const result = await response.json();
       setAnalysis(result);
     } catch (err) {
-      setError('Failed to analyze prompt. Make sure the backend is running.');
+      setError(getText('promptAnalyzer.analysisError'));
       console.error('Analysis error:', err);
     } finally {
       setLoading(false);
@@ -83,13 +85,13 @@ export default function PromptAnalyzer() {
       {/* Input Section */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
         <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">
-          Enter Your Prompt
+          {getText('promptAnalyzer.enterPrompt')}
         </h2>
         
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Type or paste your prompt here..."
+          placeholder={getText('promptAnalyzer.enterPrompt')}
           className="w-full h-32 p-4 border border-gray-300 dark:border-gray-600 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
           disabled={loading}
         />
@@ -100,14 +102,14 @@ export default function PromptAnalyzer() {
             disabled={loading || !prompt.trim()}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
           >
-            {loading ? 'Analyzing...' : 'Analyze Prompt'}
+            {loading ? getText('promptAnalyzer.analyzing') : getText('promptAnalyzer.analyze')}
           </button>
           
           <button
             onClick={clearAnalysis}
             className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
           >
-            Clear
+            {getText('promptAnalyzer.clear') || 'Clear'}
           </button>
         </div>
         
@@ -124,7 +126,7 @@ export default function PromptAnalyzer() {
           {/* Basic Metrics */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
             <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-              Basic Metrics
+              {getText('promptAnalyzer.basicMetrics') || 'Basic Metrics'}
             </h3>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -132,28 +134,28 @@ export default function PromptAnalyzer() {
                 <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                   {analysis.word_count}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-300">Words</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">{getText('promptAnalyzer.wordCount')}</div>
               </div>
               
               <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
                 <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                   {analysis.character_count}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-300">Characters</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">{getText('promptAnalyzer.characterCount')}</div>
               </div>
               
               <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
                 <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                   {analysis.sentence_count}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-300">Sentences</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">{getText('promptAnalyzer.sentenceCount')}</div>
               </div>
               
               <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
                 <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
                   {analysis.paragraph_count}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-300">Paragraphs</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">{getText('promptAnalyzer.paragraphCount')}</div>
               </div>
             </div>
           </div>
@@ -162,19 +164,19 @@ export default function PromptAnalyzer() {
           <div className="grid md:grid-cols-2 gap-6">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
               <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-                Readability
+                {getText('promptAnalyzer.readability') || 'Readability'}
               </h3>
               
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600 dark:text-gray-300">Score:</span>
+                  <span className="text-gray-600 dark:text-gray-300">{getText('promptAnalyzer.score') || 'Score'}:</span>
                   <span className="font-semibold text-gray-900 dark:text-white">
                     {analysis.readability_score}
                   </span>
                 </div>
                 
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600 dark:text-gray-300">Level:</span>
+                  <span className="text-gray-600 dark:text-gray-300">{getText('promptAnalyzer.level') || 'Level'}:</span>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${getComplexityColor(analysis.complexity_level)}`}>
                     {analysis.complexity_level}
                   </span>
@@ -184,7 +186,7 @@ export default function PromptAnalyzer() {
 
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
               <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-                Sentiment Analysis
+                {getText('promptAnalyzer.sentimentAnalysis') || 'Sentiment Analysis'}
               </h3>
               
               <div className="flex justify-center">
@@ -198,7 +200,7 @@ export default function PromptAnalyzer() {
           {/* Keywords */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
             <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-              Key Terms
+              {getText('promptAnalyzer.keywords')}
             </h3>
             
             <div className="flex flex-wrap gap-2">
@@ -216,7 +218,7 @@ export default function PromptAnalyzer() {
           {/* Suggestions */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
             <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-              Suggestions for Improvement
+              {getText('promptAnalyzer.suggestions')}
             </h3>
             
             <ul className="space-y-2">
