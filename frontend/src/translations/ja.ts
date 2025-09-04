@@ -29,6 +29,7 @@ export const ja = {
     userName: "ユーザー名",
     promptCount: "プロンプト数",
     avgTokens: "平均トークン数",
+    avgLength: "平均長",
     quality: "品質",
     cost: "コスト",
     

@@ -511,7 +511,7 @@ export default function Analytics() {
                     onClick={() => handleTemporalSort('total_tokens')}
                   >
                     <div className="flex items-center">
-                      Tokens
+                      {getText('analytics.tokens')}
                       <TemporalSortIcon field="total_tokens" />
                     </div>
                   </th>
@@ -520,7 +520,7 @@ export default function Analytics() {
                     onClick={() => handleTemporalSort('avg_quality')}
                   >
                     <div className="flex items-center">
-                      Avg Quality
+                      {getText('analytics.avgQuality')}
                       <TemporalSortIcon field="avg_quality" />
                     </div>
                   </th>
@@ -530,7 +530,7 @@ export default function Analytics() {
                       onClick={() => handleTemporalSort('unique_users')}
                     >
                       <div className="flex items-center">
-                        Users
+                        {getText('analytics.users')}
                         <TemporalSortIcon field="unique_users" />
                       </div>
                     </th>
@@ -599,7 +599,7 @@ export default function Analytics() {
                       onClick={() => handleModelSort('model')}
                     >
                       <div className="flex items-center">
-                        Model
+                        {getText('analytics.model')}
                         <ModelSortIcon field="model" />
                       </div>
                     </th>
@@ -608,7 +608,7 @@ export default function Analytics() {
                       onClick={() => handleModelSort('prompt_count')}
                     >
                       <div className="flex items-center">
-                        Prompts
+                        {getText('analytics.prompts')}
                         <ModelSortIcon field="prompt_count" />
                       </div>
                     </th>
@@ -617,7 +617,7 @@ export default function Analytics() {
                       onClick={() => handleModelSort('avg_quality')}
                     >
                       <div className="flex items-center">
-                        Quality
+                        {getText('analytics.quality')}
                         <ModelSortIcon field="avg_quality" />
                       </div>
                     </th>
@@ -626,7 +626,7 @@ export default function Analytics() {
                       onClick={() => handleModelSort('avg_tokens')}
                     >
                       <div className="flex items-center">
-                        Avg Tokens
+                        {getText('analytics.avgTokens')}
                         <ModelSortIcon field="avg_tokens" />
                       </div>
                     </th>
@@ -635,7 +635,7 @@ export default function Analytics() {
                       onClick={() => handleModelSort('total_cost')}
                     >
                       <div className="flex items-center">
-                        Cost
+                        {getText('analytics.cost')}
                         <ModelSortIcon field="total_cost" />
                       </div>
                     </th>
@@ -644,7 +644,7 @@ export default function Analytics() {
                       onClick={() => handleModelSort('avg_response_time')}
                     >
                       <div className="flex items-center">
-                        Response
+                        {getText('analytics.avgResponseTime')}
                         <ModelSortIcon field="avg_response_time" />
                       </div>
                     </th>
@@ -713,7 +713,7 @@ export default function Analytics() {
                     onClick={() => handleCategorySort('category')}
                   >
                     <div className="flex items-center">
-                      Category
+                      {getText('analytics.category')}
                       <CategorySortIcon field="category" />
                     </div>
                   </th>
@@ -722,7 +722,7 @@ export default function Analytics() {
                     onClick={() => handleCategorySort('prompt_count')}
                   >
                     <div className="flex items-center">
-                      Prompts
+                      {getText('analytics.prompts')}
                       <CategorySortIcon field="prompt_count" />
                     </div>
                   </th>
@@ -731,7 +731,7 @@ export default function Analytics() {
                     onClick={() => handleCategorySort('usage_percentage')}
                   >
                     <div className="flex items-center">
-                      Usage %
+                      {getText('analytics.usage')}
                       <CategorySortIcon field="usage_percentage" />
                     </div>
                   </th>
@@ -740,7 +740,7 @@ export default function Analytics() {
                     onClick={() => handleCategorySort('avg_quality')}
                   >
                     <div className="flex items-center">
-                      Avg Quality
+                      {getText('analytics.avgQuality')}
                       <CategorySortIcon field="avg_quality" />
                     </div>
                   </th>
@@ -805,7 +805,7 @@ export default function Analytics() {
                     onClick={() => handleSort('user_name')}
                   >
                     <div className="flex items-center">
-                      User
+                      {getText('analytics.userName')}
                       <SortIcon field="user_name" />
                     </div>
                   </th>
@@ -814,7 +814,7 @@ export default function Analytics() {
                     onClick={() => handleSort('prompt_count')}
                   >
                     <div className="flex items-center">
-                      Prompts
+                      {getText('analytics.prompts')}
                       <SortIcon field="prompt_count" />
                     </div>
                   </th>
@@ -823,7 +823,7 @@ export default function Analytics() {
                     onClick={() => handleSort('avg_quality')}
                   >
                     <div className="flex items-center">
-                      Avg Quality
+                      {getText('analytics.avgQuality')}
                       <SortIcon field="avg_quality" />
                     </div>
                   </th>
@@ -832,7 +832,7 @@ export default function Analytics() {
                     onClick={() => handleSort('total_tokens')}
                   >
                     <div className="flex items-center">
-                      Total Tokens
+                      {getText('analytics.totalTokens')}
                       <SortIcon field="total_tokens" />
                     </div>
                   </th>
@@ -841,7 +841,7 @@ export default function Analytics() {
                     onClick={() => handleSort('avg_prompt_length')}
                   >
                     <div className="flex items-center">
-                      Avg Length
+                      {getText('analytics.avgLength') || 'Avg Length'}
                       <SortIcon field="avg_prompt_length" />
                     </div>
                   </th>
@@ -850,7 +850,7 @@ export default function Analytics() {
                     onClick={() => handleSort('total_cost')}
                   >
                     <div className="flex items-center">
-                      Total Cost
+                      {getText('analytics.totalCost')}
                       <SortIcon field="total_cost" />
                     </div>
                   </th>

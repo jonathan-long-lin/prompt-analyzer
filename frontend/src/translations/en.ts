@@ -29,6 +29,7 @@ export const en = {
     userName: "User Name",
     promptCount: "Prompt Count",
     avgTokens: "Avg Tokens",
+    avgLength: "Avg Length",
     quality: "Quality",
     cost: "Cost",
     
