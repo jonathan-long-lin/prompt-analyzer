@@ -22,5 +22,15 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 
+    var(--font-geist-sans),
+    "Hiragino Sans", 
+    "Hiragino Kaku Gothic ProN", 
+    "Noto Sans CJK JP", 
+    "Yu Gothic", 
+    "Meiryo", 
+    "MS Gothic", 
+    Arial, 
+    Helvetica, 
+    sans-serif;
 }

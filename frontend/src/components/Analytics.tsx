@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface OverviewStats {
   total_prompts: number;
@@ -67,6 +68,7 @@ interface CategoryAnalytics {
 }
 
 export default function Analytics() {
+  const { t, getText } = useLanguage();
   const [overview, setOverview] = useState<OverviewStats | null>(null);
   const [userAnalytics, setUserAnalytics] = useState<UserAnalytics | null>(null);
   const [temporalData, setTemporalData] = useState<TemporalData | null>(null);
@@ -369,7 +371,7 @@ export default function Analytics() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="text-lg text-gray-600 dark:text-gray-300">Loading analytics...</div>
+        <div className="text-lg text-gray-600 dark:text-gray-300">{getText('analytics.loading')}</div>
       </div>
     );
   }
@@ -390,7 +392,7 @@ export default function Analytics() {
       {overview ? (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
           <h2 className="text-2xl font-semibold mb-6 text-gray-900 dark:text-white">
-            Dataset Overview
+            {getText('analytics.overview')}
           </h2>
           
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -398,21 +400,21 @@ export default function Analytics() {
               <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                 {overview.total_prompts?.toLocaleString() || '0'}
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">Total Prompts</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">{getText('analytics.totalPrompts')}</div>
             </div>
             
             <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
               <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                 {overview.unique_users || '0'}
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">Unique Users</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">{getText('analytics.uniqueUsers')}</div>
             </div>
             
             <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
               <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                 {overview.total_tokens?.toLocaleString() || '0'}
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">Total Tokens</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">{getText('analytics.totalTokens')}</div>
             </div>
             
             <div className="text-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
@@ -454,7 +456,7 @@ export default function Analytics() {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
-              Usage Over Time
+              {getText('analytics.temporalAnalysis')}
             </h2>
             <div className="flex items-center gap-4">
               <div className="text-sm text-gray-500 dark:text-gray-400">
@@ -569,7 +571,7 @@ export default function Analytics() {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
-              Model Performance
+              {getText('analytics.modelPerformance')}
             </h2>
             <div className="flex items-center gap-4">
               <div className="text-sm text-gray-500 dark:text-gray-400">
